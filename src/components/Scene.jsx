@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Environment from './Environment';
@@ -12,8 +12,7 @@ import ContactNode from './nodes/ContactNode';
 import DataFlow from './connections/DataFlow';
 import portfolioData from '../data/portfolio.json';
 
-function Scene() {
-  const [selectedNode, setSelectedNode] = useState(null);
+function Scene({ onNodeClick }) {
   const nodes = portfolioData.workflow.nodes;
 
   // Map node IDs to components
@@ -25,15 +24,6 @@ function Scene() {
     projects: ProjectsNode,
     contact: ContactNode
   };
-
-  // Create a map of node positions for quick lookup
-  const nodePositions = useMemo(() => {
-    const positions = {};
-    nodes.forEach(node => {
-      positions[node.id] = node.position;
-    });
-    return positions;
-  }, [nodes]);
 
   // Generate all connections from the nodes data
   const connections = useMemo(() => {
@@ -59,12 +49,6 @@ function Scene() {
 
     return allConnections;
   }, [nodes]);
-
-  const handleNodeClick = (nodeId) => {
-    setSelectedNode(nodeId);
-    console.log('Node clicked:', nodeId);
-    // Will be used for modal in Phase 4
-  };
 
   return (
     <div className="w-full h-full">
@@ -121,7 +105,7 @@ function Scene() {
             <NodeComponent
               key={node.id}
               position={node.position}
-              onClick={() => handleNodeClick(node.id)}
+              onClick={() => onNodeClick && onNodeClick(node.id)}
             />
           );
         })}
