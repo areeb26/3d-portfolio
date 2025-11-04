@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import Scene from './components/Scene';
 import Modal from './components/ui/Modal';
+import LoadingScreen from './components/ui/LoadingScreen';
+import Navigation from './components/ui/Navigation';
+import Instructions from './components/ui/Instructions';
 import { renderModalContent } from './components/ui/ModalContent';
 import { useNodeInteraction } from './hooks/useNodeInteraction';
 import { useKeyboard } from './hooks/useKeyboard';
@@ -9,6 +13,11 @@ import './App.css';
 function App() {
   const nodes = portfolioData.workflow.nodes;
 
+  // UI state
+  const [isLoading, setIsLoading] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
+
   // Node interaction management
   const {
     selectedNode,
@@ -17,62 +26,80 @@ function App() {
     closeModal,
     goToNextNode,
     goToPreviousNode,
+    selectNode,
   } = useNodeInteraction(nodes);
 
   // Keyboard navigation
   useKeyboard({
     onNext: goToNextNode,
     onPrevious: goToPreviousNode,
-    onEscape: closeModal,
-    enabled: !isModalOpen, // Disable when modal is open (modal handles ESC itself)
+    onEscape: () => {
+      if (isNavOpen) setIsNavOpen(false);
+      else closeModal();
+    },
+    enabled: !isModalOpen && !showInstructions,
   });
+
+  // Handle load complete
+  const handleLoadComplete = () => {
+    setIsLoading(false);
+    setShowInstructions(true);
+  };
+
+  // Handle navigation node select
+  const handleNavNodeSelect = (nodeId) => {
+    selectNode(nodeId);
+    setIsNavOpen(false);
+  };
 
   return (
     <div className="w-full h-full">
-      {/* Instructions Overlay */}
-      <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg max-w-sm">
-        <h2 className="text-lg font-bold mb-2 text-n8n-purple">3D Portfolio Workflow</h2>
-        <p className="text-sm mb-2">Fully Interactive!</p>
-        <ul className="text-xs space-y-1">
-          <li>• Click nodes to view details</li>
-          <li>• Arrow keys to navigate nodes</li>
-          <li>• ESC to close modal</li>
-          <li>• Drag to rotate camera</li>
-          <li>• Scroll to zoom in/out</li>
-          <li>• Right-click drag to pan</li>
-        </ul>
-        <div className="mt-3 text-xs text-gray-400">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-block w-3 h-3 bg-n8n-purple rounded"></span>
-            <span>Trigger Node</span>
-          </div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-block w-3 h-3 bg-[#00C0FF] rounded"></span>
-            <span>Function Nodes</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="inline-block w-3 h-3 bg-[#A855F7] rounded"></span>
-            <span>Output Node</span>
-          </div>
-        </div>
-      </div>
+      {/* Loading Screen */}
+      {isLoading && <LoadingScreen onLoadComplete={handleLoadComplete} />}
+
+      {/* Instructions Modal */}
+      <Instructions
+        isVisible={showInstructions}
+        onClose={() => setShowInstructions(false)}
+      />
+
+      {/* Navigation Panel */}
+      <Navigation
+        nodes={nodes}
+        selectedNodeId={selectedNode?.id}
+        onNodeSelect={handleNavNodeSelect}
+        isOpen={isNavOpen}
+        onToggle={() => setIsNavOpen(!isNavOpen)}
+      />
+
+      {/* Quick Help Button */}
+      <button
+        onClick={() => setShowInstructions(true)}
+        className="fixed bottom-4 left-4 z-10 bg-black/70 backdrop-blur-sm text-white p-3 rounded-full hover:bg-black/80 transition-colors border border-purple-500/30"
+        aria-label="Show help"
+        title="Show instructions"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
 
       {/* Version Badge */}
-      <div className="absolute bottom-4 right-4 z-10 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-xs">
-        Phase 4: Interactions ✓
+      <div className="fixed bottom-4 right-4 z-10 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-xs">
+        Phase 5: Content & UI ✓
       </div>
 
       {/* Navigation Hint */}
-      {!isModalOpen && (
-        <div className="absolute bottom-4 left-4 z-10 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-xs">
-          <span className="text-gray-400">Tip: Use ← → arrow keys to navigate</span>
+      {!isModalOpen && !isNavOpen && !isLoading && !showInstructions && (
+        <div className="fixed top-20 left-4 z-10 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-xs animate-pulse">
+          <span className="text-gray-400">💡 Click any node to explore</span>
         </div>
       )}
 
       {/* 3D Scene */}
       <Scene onNodeClick={handleNodeClick} />
 
-      {/* Modal */}
+      {/* Content Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal} node={selectedNode}>
         {selectedNode && renderModalContent(selectedNode)}
       </Modal>
