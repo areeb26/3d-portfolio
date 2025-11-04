@@ -1,9 +1,36 @@
+import { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Environment from './Environment';
 import Ground from './Ground';
+import TriggerNode from './nodes/TriggerNode';
+import AboutNode from './nodes/AboutNode';
+import SkillsNode from './nodes/SkillsNode';
+import ExperienceNode from './nodes/ExperienceNode';
+import ProjectsNode from './nodes/ProjectsNode';
+import ContactNode from './nodes/ContactNode';
+import portfolioData from '../data/portfolio.json';
 
 function Scene() {
+  const [selectedNode, setSelectedNode] = useState(null);
+  const nodes = portfolioData.workflow.nodes;
+
+  // Map node IDs to components
+  const nodeComponents = {
+    trigger: TriggerNode,
+    about: AboutNode,
+    skills: SkillsNode,
+    experience: ExperienceNode,
+    projects: ProjectsNode,
+    contact: ContactNode
+  };
+
+  const handleNodeClick = (nodeId) => {
+    setSelectedNode(nodeId);
+    console.log('Node clicked:', nodeId);
+    // Will be used for modal in Phase 4
+  };
+
   return (
     <div className="w-full h-full">
       <Canvas
@@ -17,7 +44,7 @@ function Scene() {
         {/* Camera */}
         <PerspectiveCamera
           makeDefault
-          position={[0, 5, 15]}
+          position={[0, 8, 18]}
           fov={60}
         />
 
@@ -29,7 +56,7 @@ function Scene() {
           minDistance={5}
           maxDistance={50}
           maxPolarAngle={Math.PI / 2}
-          target={[5, 0, 5]}
+          target={[8, 0, 4]}
         />
 
         {/* Environment (Lighting + Fog) */}
@@ -38,11 +65,19 @@ function Scene() {
         {/* Ground Plane */}
         <Ground />
 
-        {/* Placeholder for nodes - will be added in Phase 2 */}
-        <mesh position={[0, 1, 0]}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="#7B3FF2" />
-        </mesh>
+        {/* Render all workflow nodes */}
+        {nodes.map((node) => {
+          const NodeComponent = nodeComponents[node.id];
+          if (!NodeComponent) return null;
+
+          return (
+            <NodeComponent
+              key={node.id}
+              position={node.position}
+              onClick={() => handleNodeClick(node.id)}
+            />
+          );
+        })}
       </Canvas>
     </div>
   );
