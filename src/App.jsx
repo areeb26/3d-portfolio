@@ -7,12 +7,13 @@ function App() {
       {/* Instructions Overlay */}
       <div className="absolute top-4 left-4 z-10 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg max-w-sm">
         <h2 className="text-lg font-bold mb-2 text-n8n-purple">3D Portfolio Workflow</h2>
-        <p className="text-sm mb-2">Interactive Node System Active!</p>
+        <p className="text-sm mb-2">Data Flow System Active!</p>
         <ul className="text-xs space-y-1">
           <li>• Drag to rotate camera</li>
           <li>• Scroll to zoom in/out</li>
           <li>• Right-click drag to pan</li>
           <li>• Hover over nodes for effects</li>
+          <li>• Watch data particles flow between nodes</li>
           <li>• Click nodes to interact (Phase 4)</li>
         </ul>
         <div className="mt-3 text-xs text-gray-400">
@@ -33,7 +34,7 @@ function App() {
 
       {/* Version Badge */}
       <div className="absolute bottom-4 right-4 z-10 bg-black/70 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-xs">
-        Phase 2: Node System ✓
+        Phase 3: Connections ✓
       </div>
 
       {/* 3D Scene */}

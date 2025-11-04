@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import Environment from './Environment';
@@ -9,6 +9,7 @@ import SkillsNode from './nodes/SkillsNode';
 import ExperienceNode from './nodes/ExperienceNode';
 import ProjectsNode from './nodes/ProjectsNode';
 import ContactNode from './nodes/ContactNode';
+import DataFlow from './connections/DataFlow';
 import portfolioData from '../data/portfolio.json';
 
 function Scene() {
@@ -24,6 +25,40 @@ function Scene() {
     projects: ProjectsNode,
     contact: ContactNode
   };
+
+  // Create a map of node positions for quick lookup
+  const nodePositions = useMemo(() => {
+    const positions = {};
+    nodes.forEach(node => {
+      positions[node.id] = node.position;
+    });
+    return positions;
+  }, [nodes]);
+
+  // Generate all connections from the nodes data
+  const connections = useMemo(() => {
+    const allConnections = [];
+
+    nodes.forEach(node => {
+      if (node.connections && node.connections.length > 0) {
+        node.connections.forEach(targetId => {
+          const targetNode = nodes.find(n => n.id === targetId);
+          if (targetNode) {
+            allConnections.push({
+              id: `${node.id}-${targetId}`,
+              from: node.id,
+              to: targetId,
+              start: node.position,
+              end: targetNode.position,
+              color: node.color,
+            });
+          }
+        });
+      }
+    });
+
+    return allConnections;
+  }, [nodes]);
 
   const handleNodeClick = (nodeId) => {
     setSelectedNode(nodeId);
@@ -64,6 +99,18 @@ function Scene() {
 
         {/* Ground Plane */}
         <Ground />
+
+        {/* Render all connections with data flow */}
+        {connections.map((connection) => (
+          <DataFlow
+            key={connection.id}
+            start={connection.start}
+            end={connection.end}
+            color={connection.color}
+            particleCount={3}
+            speed={0.5}
+          />
+        ))}
 
         {/* Render all workflow nodes */}
         {nodes.map((node) => {
