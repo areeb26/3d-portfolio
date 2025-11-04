@@ -1,0 +1,138 @@
+{
+  "workflow": {
+    "name": "Portfolio Workflow",
+    "nodes": [
+      {
+        "id": "trigger",
+        "type": "trigger",
+        "name": "Welcome",
+        "position": [0, 0, 0],
+        "icon": "▶",
+        "color": "#7B3FF2",
+        "content": {
+          "title": "Welcome to My Portfolio",
+          "subtitle": "Interactive n8n Workflow Experience",
+          "description": "Navigate through the nodes to explore my professional journey. Use WASD or arrow keys to move, click nodes to interact."
+        },
+        "connections": ["about"]
+      },
+      {
+        "id": "about",
+        "type": "function",
+        "name": "About Me",
+        "position": [5, 0, 0],
+        "icon": "👤",
+        "color": "#00C0FF",
+        "content": {
+          "title": "About Me",
+          "bio": "A passionate developer creating amazing workflow automations and interactive experiences.",
+          "interests": ["Web Development", "3D Graphics", "Automation", "Open Source"],
+          "location": "Global"
+        },
+        "connections": ["skills"]
+      },
+      {
+        "id": "skills",
+        "type": "set",
+        "name": "Skills & Tech",
+        "position": [10, 0, 0],
+        "icon": "⚡",
+        "color": "#FF6D5A",
+        "content": {
+          "title": "Technical Skills",
+          "categories": {
+            "Frontend": ["React", "Three.js", "Tailwind CSS", "TypeScript"],
+            "Backend": ["Node.js", "Python", "PostgreSQL", "Redis"],
+            "DevOps": ["Docker", "Kubernetes", "CI/CD", "AWS"],
+            "Tools": ["n8n", "Git", "VS Code", "Figma"]
+          }
+        },
+        "connections": ["experience", "projects"]
+      },
+      {
+        "id": "experience",
+        "type": "loop",
+        "name": "Experience",
+        "position": [7.5, 0, 5],
+        "icon": "💼",
+        "color": "#FFB800",
+        "content": {
+          "title": "Work Experience",
+          "positions": [
+            {
+              "company": "Tech Company",
+              "role": "Senior Developer",
+              "period": "2022 - Present",
+              "achievements": [
+                "Led development of automation platform",
+                "Improved workflow efficiency by 40%",
+                "Mentored junior developers"
+              ]
+            },
+            {
+              "company": "Startup Inc",
+              "role": "Full Stack Developer",
+              "period": "2020 - 2022",
+              "achievements": [
+                "Built scalable web applications",
+                "Implemented CI/CD pipelines",
+                "Contributed to open source projects"
+              ]
+            }
+          ]
+        },
+        "connections": ["contact"]
+      },
+      {
+        "id": "projects",
+        "type": "split",
+        "name": "Projects",
+        "position": [12.5, 0, 5],
+        "icon": "🚀",
+        "color": "#00E5A0",
+        "content": {
+          "title": "Featured Projects",
+          "projects": [
+            {
+              "name": "3D Portfolio",
+              "description": "An interactive 3D portfolio built with Three.js and React",
+              "tech": ["React", "Three.js", "Tailwind"],
+              "link": "#"
+            },
+            {
+              "name": "Workflow Automation",
+              "description": "Custom n8n workflows for business automation",
+              "tech": ["n8n", "Node.js", "PostgreSQL"],
+              "link": "#"
+            },
+            {
+              "name": "Real-time Dashboard",
+              "description": "Analytics dashboard with live data visualization",
+              "tech": ["React", "D3.js", "WebSocket"],
+              "link": "#"
+            }
+          ]
+        },
+        "connections": ["contact"]
+      },
+      {
+        "id": "contact",
+        "type": "output",
+        "name": "Contact",
+        "position": [10, 0, 10],
+        "icon": "✉",
+        "color": "#A855F7",
+        "content": {
+          "title": "Get In Touch",
+          "email": "hello@example.com",
+          "social": {
+            "github": "https://github.com",
+            "linkedin": "https://linkedin.com",
+            "twitter": "https://twitter.com"
+          }
+        },
+        "connections": []
+      }
+    ]
+  }
+}
